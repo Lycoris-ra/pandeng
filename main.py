@@ -59,93 +59,35 @@ def do_action_with_osc(action_name, *keys):
         return
     pyautogui.hotkey(*keys)
 
+def read_commands_from_file(path, last_line_index):
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+    except FileNotFoundError:
+        return [], last_line_index
 
-software_path = r"c:\Users\1\Desktop\usb\JHDSOWin20G.exe"
-process = subprocess.Popen([software_path])
-time.sleep(1)
-button = pyautogui.locateCenterOnScreen('ok_button.png', confidence=0.8)
-pyautogui.click(button)
+    cleaned = [line.strip() for line in lines if line.strip() and not line.strip().startswith('#')]
+    if last_line_index < len(cleaned):
+        return cleaned[last_line_index:], len(cleaned)
+    return [], last_line_index
+
+
+if locate_center_safe('OSC.png', confidence=0.9) is None:
+    software_path = r"c:\Users\1\Desktop\usb\JHDSOWin20G.exe"
+    process = subprocess.Popen([software_path])
+    time.sleep(1)
+    if locate_center_safe('open.png', confidence=0.9):
+        pyautogui.click(pyautogui.locateCenterOnScreen('open.png', confidence=0.9))
+    button = pyautogui.locateCenterOnScreen('ok_button.png', confidence=0.8)
+    pyautogui.click(button)
+command_file_path = 'commands.txt'
+processed_lines = 0
+while True:
+    if locate_center_safe('OSC.png', confidence=0.9):
+        print("软件已打开，进入指令监听...")
+        break
 while True:
     command = input("请输入指令: ")
-    # if command == "close":
-    #     if process:
-    #         process.terminate()
-    #         process.wait()  # 等待进程结束
-    #         process = None
-    #         print("软件已关闭")
-    #     else:
-    #         print("软件未运行")
-    # elif command == "保存波形":
-    #     do_action_with_osc("保存波形", 'ctrl', 's')
-    # elif command == "读取波形到R1":
-    #     do_action_with_osc("读取波形到R1", 'ctrl', 'o')
-    # elif command == "保存环境配置":
-    #     do_action_with_osc("保存环境配置", 'ctrl', 'shift', 's')
-    # elif command == "读取环境配置":
-    #     do_action_with_osc("读取环境配置", 'ctrl', 'shift', 'o')
-    # elif command == "打印":
-    #     do_action_with_osc("打印", 'ctrl', 'p')
-    # elif command == "最小化":
-    #     do_action_with_osc("最小化", 'ctrl', 'm')
-    # elif command in ("解码通道1设置", "解码通道一设置"):
-    #     do_sequence_click("解码通道1设置", ['tongdao.png', 'JMtongdao1.png'])
-    # elif command in ("解码通道2设置", "解码通道二设置"):
-    #     do_sequence_click("解码通道2设置", ['tongdao.png', 'JMtongdao2.png'])
-    # elif command in ("模拟通道1设置", "模拟通道一设置"):
-    #     do_action_with_osc("模拟通道1设置", 'ctrl', '1')
-    # elif command in ("模拟通道2设置", "模拟通道二设置"):
-    #     do_action_with_osc("模拟通道2设置", 'ctrl', '2')
-    # elif command in ("扩展通道1设置", "扩展通道一设置"):
-    #     do_action_with_osc("扩展通道1设置", 'ctrl', 'shift', '1')
-    # elif command in ("扩展通道2设置", "扩展通道二设置"):
-    #     do_action_with_osc("扩展通道2设置", 'ctrl', 'shift', '2')
-    # elif command == "水平设置":
-    #     do_action_with_osc("水平设置", 'ctrl', 't')
-    # elif command == "实时采样":
-    #     do_sequence_click("实时采样", ['shiji.png', 'sampling.png'])
-    # elif command == "峰值检测":
-    #     do_sequence_click("峰值检测", ['shiji.png', 'peak_detection.png'])
-    # elif command == "平均":
-    #     do_sequence_click("平均", ['shiji.png', 'average.png'])
-    # elif command == "触发设置":
-    #     do_action_with_osc("触发设置", 'ctrl', 'g')
-    # elif command == "触发停止":
-    #     do_sequence_click("触发停止", ['chufa.png', 'trigger_stop.png'])
-    # elif command == "自动触发":
-    #     do_sequence_click("自动触发", ['chufa.png', 'auto_trigger.png'])
-    # elif command == "正常触发":
-    #     do_sequence_click("正常触发", ['chufa.png', 'normal_trigger.png'])
-    # elif command == "单次触发":
-    #     do_sequence_click("单次触发", ['chufa.png', 'single_trigger.png'])
-    # elif command == "边沿触发":
-    #     do_sequence_click("边沿触发", ['chufa.png', 'edge_trigger.png'])
-    # elif command == "脉宽触发":
-    #     do_sequence_click("脉宽触发", ['chufa.png', 'pulse_width_trigger.png'])
-    # elif command == "视频触发":
-    #     do_sequence_click("视频触发", ['chufa.png', 'video_trigger.png'])
-    # elif command == "显示设置":
-    #     do_action_with_osc("显示设置", 'f7')
-    # elif command == "YT栅格":
-    #     do_sequence_click("YT栅格", ['xianshi', 'yt_grid.png'])
-    # elif command == "XY栅格":
-    #     do_sequence_click("XY栅格", ['xianshi', 'xy_grid.png'])
-    # elif command == "测量设置":
-    #     do_action_with_osc("测量设置", 'f9')
-    # elif command == "退出":
-    #     if process:
-    #         if click_osc_button():
-    #             pyautogui.hotkey('alt', 'f4')
-    #             print("已发送 Alt+F4 (退出)")
-    #         else:
-    #             print("退出操作: 未找到 OSC 按钮")
-    #         process = None
-    #     else:
-    #         print("软件未运行")
-    # elif command == "over":
-    #     if process:
-    #         process.terminate()
-    #         process.wait()
-    #     break
     if command == ":AUTO":
         do_action_with_osc("自动设置", 'f4')
     elif command == ":CHANnel1:COUPLing":
